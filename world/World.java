@@ -32,7 +32,7 @@ public class World {
     private int height;
     private List<Creature> creatures;
 
-    public static final int TILE_TYPES = 2;
+    public static final int TILE_TYPES = 1;
 
     public World(Tile[][] tiles) {
         this.tiles = tiles;
@@ -47,6 +47,10 @@ public class World {
         } else {
             return tiles[x][y];
         }
+    }
+
+    public void setTile(Tile t, int x, int y) {
+        tiles[x][y] = t;
     }
 
     public char glyph(int x, int y) {
@@ -84,6 +88,23 @@ public class World {
         creature.setY(y);
 
         this.creatures.add(creature);
+    }
+
+    public void addAtBeginning(Creature creature) {
+        creature.setX(0);
+        creature.setY(0);
+        this.creatures.add(creature);
+    }
+
+    public boolean addAtCertainLocation(Creature creature, int x, int y) {
+        if (!tile(x, y).isGround() || this.creature(x, y) != null) {
+            creature.setX(x);
+            creature.setY(y);
+            this.creatures.add(creature);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Creature creature(int x, int y) {

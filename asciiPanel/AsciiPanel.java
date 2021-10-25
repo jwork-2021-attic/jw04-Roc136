@@ -56,6 +56,16 @@ public class AsciiPanel extends JPanel {
     public static Color cyan = new Color(0, 128, 128);
 
     /**
+     * The color turquoise.
+     */
+    public static Color turquoise = new Color(0, 229, 238);
+
+    /**
+     * The color orange.
+     */
+    public static Color orange = new Color(255, 165, 0);
+
+    /**
      * The color white (light gray).
      */
     public static Color white = new Color(192, 192, 192);
@@ -94,6 +104,16 @@ public class AsciiPanel extends JPanel {
      * A brighter cyan.
      */
     public static Color brightCyan = new Color(0, 255, 255);
+
+    /**
+     * A brighter orange.
+     */
+    public static Color brightOrange = new Color(238, 154, 0);
+
+    /**
+     * A brighter turquoise.
+     */
+    public static Color brightTurquoise = new Color(0, 245, 255);
 
     /**
      * A brighter white (pure white).

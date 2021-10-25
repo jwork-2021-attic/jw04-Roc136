@@ -119,9 +119,29 @@ public class Creature {
         Creature other = world.creature(x + mx, y + my);
 
         if (other == null) {
+            setFootPrints(mx, my);
             ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
         } else {
             attack(other);
+        }
+    }
+
+    public boolean win() {
+        return this.world.tile(x, y).isEnding();
+    }
+
+    private void setFootPrints(int mx, int my) {
+        if (world.tile(x, y).isBeginning()) {
+            return;
+        }
+        if (mx == -1) {
+            this.world.setTile(Tile.LEFT, x, y);
+        } else if (mx == 1) {
+            this.world.setTile(Tile.RIGHT, x, y);
+        } else if (my == -1) {
+            this.world.setTile(Tile.UP, x, y);
+        } else if (my == 1) {
+            this.world.setTile(Tile.DOWN, x, y);
         }
     }
 
@@ -136,7 +156,9 @@ public class Creature {
     }
 
     public void update() {
-        this.ai.onUpdate();
+        if (this.ai != null) {
+            this.ai.onUpdate();
+        }
     }
 
     public boolean canEnter(int x, int y) {
@@ -156,5 +178,6 @@ public class Creature {
         this.attackValue = attack;
         this.defenseValue = defense;
         this.visionRadius = visionRadius;
+        this.ai = null;
     }
 }

@@ -38,8 +38,8 @@ public class PlayScreen implements Screen {
     private List<String> oldMessages;
 
     public PlayScreen() {
-        this.screenWidth = 80;
-        this.screenHeight = 24;
+        this.screenWidth = 40;
+        this.screenHeight = 40;
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
@@ -51,27 +51,29 @@ public class PlayScreen implements Screen {
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages);
 
-        for (int i = 0; i < 8; i++) {
-            creatureFactory.newFungus();
-        }
+        // for (int i = 0; i < 8; i++) {
+        //     creatureFactory.newFungus();
+        // }
     }
 
     private void createWorld() {
-        world = new WorldBuilder(90, 31).makeCaves().build();
+        // world = new WorldBuilder(40, 40).makeCaves().build();
+        world = new WorldBuilder(40, 40).makeMaze().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
         // Show terrain
-        for (int x = 0; x < screenWidth; x++) {
-            for (int y = 0; y < screenHeight; y++) {
+        for (int x = 0; x < screenWidth && x < world.width(); x++) {
+            for (int y = 0; y < screenHeight && y < world.height(); y++) {
                 int wx = x + left;
                 int wy = y + top;
 
-                if (player.canSee(wx, wy)) {
-                    terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
-                } else {
-                    terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
-                }
+                // if (player.canSee(wx, wy)) {
+                //     terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
+                // } else {
+                //     terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
+                // }
+                terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
             }
         }
         // Show creatures
@@ -90,6 +92,7 @@ public class PlayScreen implements Screen {
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
         int top = this.screenHeight - messages.size();
         for (int i = 0; i < messages.size(); i++) {
+            // TODO 消息长度不能超过屏幕宽度，否则报错
             terminal.write(messages.get(i), 1, top + i + 1);
         }
         this.oldMessages.addAll(messages);
@@ -103,8 +106,8 @@ public class PlayScreen implements Screen {
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
         // Stats
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        terminal.write(stats, 1, 23);
+        String stats = String.format("%3d/%3d keys collected.", player.hp(), player.maxHP());
+        terminal.write(stats, 0, screenHeight);
         // Messages
         displayMessages(terminal, this.messages);
     }
@@ -124,6 +127,9 @@ public class PlayScreen implements Screen {
             case KeyEvent.VK_DOWN:
                 player.moveBy(0, 1);
                 break;
+        }
+        if (player.win()) {
+            return new WinScreen();
         }
         return this;
     }

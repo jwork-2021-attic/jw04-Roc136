@@ -35,7 +35,7 @@ public class CreatureFactory {
 
     public Creature newPlayer(List<String> messages) {
         Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9);
-        world.addAtEmptyLocation(player);
+        world.addAtBeginning(player);
         new PlayerAI(player, messages);
         return player;
     }
@@ -43,6 +43,13 @@ public class CreatureFactory {
     public Creature newFungus() {
         Creature fungus = new Creature(this.world, (char)3, AsciiPanel.green, 10, 0, 0, 0);
         world.addAtEmptyLocation(fungus);
+        new FungusAI(fungus, this);
+        return fungus;
+    }
+
+    public Creature newFungus(int x, int y) {
+        Creature fungus = new Creature(this.world, (char)3, AsciiPanel.green, 10, 0, 0, 0);
+        world.addAtCertainLocation(fungus, x, y);
         new FungusAI(fungus, this);
         return fungus;
     }
