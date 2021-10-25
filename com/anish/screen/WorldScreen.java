@@ -2,60 +2,75 @@ package com.anish.screen;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import com.anish.calabashbros.BubbleSorter;
-import com.anish.calabashbros.Calabash;
-import com.anish.calabashbros.World;
+// import com.anish.sprites.BubbleSorter;
+import com.anish.sprites.QuickSorter;
+import com.anish.sprites.Sprite;
+import com.anish.sprites.World;
 
 import asciiPanel.AsciiPanel;
 
 public class WorldScreen implements Screen {
 
     private World world;
-    private Calabash[] bros;
+    private SpritesCollection sprites;
     String[] sortSteps;
 
     public WorldScreen() {
+        try {
+            // init(3);
+            init(16);
+        } catch(IOException e) {
+            ;
+        }
+    }
+
+    private void init(int size) throws IOException {
         world = new World();
+        sprites = new SpritesCollection(size, size);
 
-        bros = new Calabash[7];
+        File file = new File("resources/c256.png");
+        BufferedImage bufImage = ImageIO.read(file);
 
-        bros[3] = new Calabash(new Color(204, 0, 0), 1, world);
-        bros[5] = new Calabash(new Color(255, 165, 0), 2, world);
-        bros[1] = new Calabash(new Color(252, 233, 79), 3, world);
-        bros[0] = new Calabash(new Color(78, 154, 6), 4, world);
-        bros[4] = new Calabash(new Color(50, 175, 255), 5, world);
-        bros[6] = new Calabash(new Color(114, 159, 207), 6, world);
-        bros[2] = new Calabash(new Color(173, 127, 168), 7, world);
+        int rgb = 0;
+        int rdm = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                rgb = bufImage.getRGB((int)(j * 35.75 + 13.375), (int)(i * 26.75 + 13.375));
+                rdm = sprites.getRandom();
+                sprites.set(new Sprite(new Color((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF), i * size + j, world), rdm / size, rdm % size);
+                world.put(sprites.get(rdm / size, rdm % size), rdm % size * 2 + 4, rdm / size * 2 + 4);
+            }
+        }
 
-        world.put(bros[0], 10, 10);
-        world.put(bros[1], 12, 10);
-        world.put(bros[2], 14, 10);
-        world.put(bros[3], 16, 10);
-        world.put(bros[4], 18, 10);
-        world.put(bros[5], 20, 10);
-        world.put(bros[6], 22, 10);
+        QuickSorter<Sprite> qs = new QuickSorter<>();
+        qs.load(sprites.toArray());
+        qs.sort();
 
-        BubbleSorter<Calabash> b = new BubbleSorter<>();
-        b.load(bros);
-        b.sort();
-
-        sortSteps = this.parsePlan(b.getPlan());
+        sortSteps = this.parsePlan(qs.getPlan());
     }
 
     private String[] parsePlan(String plan) {
         return plan.split("\n");
     }
 
-    private void execute(Calabash[] bros, String step) {
+    private void execute(Sprite[] sprites, String step) {
         String[] couple = step.split("<->");
-        getBroByRank(bros, Integer.parseInt(couple[0])).swap(getBroByRank(bros, Integer.parseInt(couple[1])));
+        getSpriteByRank(sprites, Integer.parseInt(couple[0])).swap(getSpriteByRank(sprites, Integer.parseInt(couple[1])));
     }
 
-    private Calabash getBroByRank(Calabash[] bros, int rank) {
-        for (Calabash bro : bros) {
-            if (bro.getRank() == rank) {
-                return bro;
+    private Sprite getSpriteByRank(Sprite[] sprites, int rank) {
+        for (Sprite sprite : sprites) {
+            if (sprite.getRank() == rank) {
+                return sprite;
             }
         }
         return null;
@@ -79,11 +94,56 @@ public class WorldScreen implements Screen {
     public Screen respondToUserInput(KeyEvent key) {
 
         if (i < this.sortSteps.length) {
-            this.execute(bros, sortSteps[i]);
+            this.execute(sprites.toArray(), sortSteps[i]);
             i++;
         }
 
         return this;
     }
 
+    private class SpritesCollection {
+        
+        private Sprite[][] sprites;
+        int row;
+        int col;
+        private List<Integer> randomList;
+        private int index;
+
+        SpritesCollection(int row, int col) {
+            sprites = new Sprite[row][col];
+            this.row = row;
+            this.col = col;
+
+            index = 0;
+            randomList = IntStream.rangeClosed(0, row * col - 1).boxed().collect(Collectors.toList());
+            Collections.shuffle(randomList);
+        }
+
+        public void set(Sprite sprite, int r, int c) {
+            sprites[r][c] = sprite;
+        }
+
+        public Sprite get(int r, int c) {
+            return sprites[r][c];
+        }
+
+        public Sprite[] toArray() {
+            Sprite[] ss = new Sprite[row * col];
+
+            int i = 0;
+            for(Sprite[] l : sprites) {
+                for(Sprite s : l) {
+                    ss[i] = s;
+                    i++;
+                }
+            }
+
+            return ss;
+        }
+
+        public int getRandom() {
+            index = (index + 1) % (row * col);
+            return (int)randomList.get(index);
+        }
+    }
 }

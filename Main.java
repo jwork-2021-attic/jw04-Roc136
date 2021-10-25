@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
-import com.anish.calabashbros.World;
+import com.anish.sprites.World;
 import com.anish.screen.Screen;
 import com.anish.screen.WorldScreen;
 
