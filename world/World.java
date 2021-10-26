@@ -97,7 +97,7 @@ public class World {
     }
 
     public boolean addAtCertainLocation(Creature creature, int x, int y) {
-        if (!tile(x, y).isGround() || this.creature(x, y) != null) {
+        if (tile(x, y).isGround() || this.creature(x, y) != null) {
             creature.setX(x);
             creature.setY(y);
             this.creatures.add(creature);

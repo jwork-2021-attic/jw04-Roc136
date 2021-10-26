@@ -33,8 +33,9 @@ public class CreatureFactory {
         this.world = world;
     }
 
-    public Creature newPlayer(List<String> messages) {
-        Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9);
+    public Creature newPlayer(List<String> messages, int maxKeysNum) {
+        Creature player = new Player(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9, maxKeysNum);
+        // world.addAtEmptyLocation(player);
         world.addAtBeginning(player);
         new PlayerAI(player, messages);
         return player;
@@ -47,10 +48,30 @@ public class CreatureFactory {
         return fungus;
     }
 
+    public Creature newKey() {
+        Creature key = new Creature(this.world, (char)13, AsciiPanel.yellow, 10, 0, 0, 0);
+        world.addAtEmptyLocation(key);
+        new KeysAI(key);
+        return key;
+    }
+
     public Creature newFungus(int x, int y) {
         Creature fungus = new Creature(this.world, (char)3, AsciiPanel.green, 10, 0, 0, 0);
-        world.addAtCertainLocation(fungus, x, y);
-        new FungusAI(fungus, this);
-        return fungus;
+        if (world.addAtCertainLocation(fungus, x, y)) {
+            new FungusAI(fungus, this);
+            return fungus;
+        } else {
+            return null;
+        }
+    }
+
+    public Creature newKey(int x, int y) {
+        Creature key = new Creature(this.world, (char)13, AsciiPanel.yellow, 10, 0, 0, 0);
+        if (world.addAtCertainLocation(key, x, y)) {
+            new KeysAI(key);
+            return key;
+        } else {
+            return null;
+        }
     }
 }

@@ -25,9 +25,9 @@ import java.awt.Color;
  */
 public class Creature {
 
-    private World world;
+    protected World world;
 
-    private int x;
+    protected int x;
 
     public void setX(int x) {
         this.x = x;
@@ -37,7 +37,7 @@ public class Creature {
         return x;
     }
 
-    private int y;
+    protected int y;
 
     public void setY(int y) {
         this.y = y;
@@ -47,31 +47,31 @@ public class Creature {
         return y;
     }
 
-    private char glyph;
+    protected char glyph;
 
     public char glyph() {
         return this.glyph;
     }
 
-    private Color color;
+    protected Color color;
 
     public Color color() {
         return this.color;
     }
 
-    private CreatureAI ai;
+    protected CreatureAI ai;
 
     public void setAI(CreatureAI ai) {
         this.ai = ai;
     }
 
-    private int maxHP;
+    protected int maxHP;
 
     public int maxHP() {
         return this.maxHP;
     }
 
-    private int hp;
+    protected int hp;
 
     public int hp() {
         return this.hp;
@@ -85,22 +85,28 @@ public class Creature {
         }
     }
 
-    private int attackValue;
+    protected int attackValue;
 
     public int attackValue() {
         return this.attackValue;
     }
 
-    private int defenseValue;
+    protected int defenseValue;
 
     public int defenseValue() {
         return this.defenseValue;
     }
 
-    private int visionRadius;
+    protected int visionRadius;
 
     public int visionRadius() {
         return this.visionRadius;
+    }
+
+    protected int score;
+
+    public int score() {
+        return score;
     }
 
     public boolean canSee(int wx, int wy) {
@@ -127,11 +133,15 @@ public class Creature {
     }
 
     public boolean win() {
-        return this.world.tile(x, y).isEnding();
+        if (this.world.tile(x, y).isEnding()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    private void setFootPrints(int mx, int my) {
-        if (world.tile(x, y).isBeginning()) {
+    protected void setFootPrints(int mx, int my) {
+        if (world.tile(x, y).isBeginning() || world.tile(x, y).isEnding()) {
             return;
         }
         if (mx == -1) {
@@ -149,10 +159,10 @@ public class Creature {
         int damage = Math.max(0, this.attackValue() - other.defenseValue());
         damage = (int) (Math.random() * damage) + 1;
 
-        other.modifyHP(-damage);
-
         this.notify("You attack the '%s' for %d damage.", other.glyph, damage);
         other.notify("The '%s' attacks you for %d damage.", glyph, damage);
+
+        other.modifyHP(-damage);
     }
 
     public void update() {
@@ -179,5 +189,6 @@ public class Creature {
         this.defenseValue = defense;
         this.visionRadius = visionRadius;
         this.ai = null;
+        this.score = 0;
     }
 }

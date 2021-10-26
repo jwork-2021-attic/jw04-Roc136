@@ -36,10 +36,12 @@ public class PlayScreen implements Screen {
     private int screenHeight;
     private List<String> messages;
     private List<String> oldMessages;
+    private int maxKeysNum;
 
     public PlayScreen() {
         this.screenWidth = 40;
         this.screenHeight = 40;
+        this.maxKeysNum = 10;
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
@@ -49,11 +51,12 @@ public class PlayScreen implements Screen {
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
-        this.player = creatureFactory.newPlayer(this.messages);
-
-        // for (int i = 0; i < 8; i++) {
-        //     creatureFactory.newFungus();
-        // }
+        if (world != null) {
+            this.player = creatureFactory.newPlayer(this.messages, maxKeysNum);
+            for (int i = 0; i < maxKeysNum; i++) {
+                creatureFactory.newKey();
+            }
+        }
     }
 
     private void createWorld() {
@@ -80,9 +83,10 @@ public class PlayScreen implements Screen {
         for (Creature creature : world.getCreatures()) {
             if (creature.x() >= left && creature.x() < left + screenWidth && creature.y() >= top
                     && creature.y() < top + screenHeight) {
-                if (player.canSee(creature.x(), creature.y())) {
-                    terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
-                }
+                // if (player.canSee(creature.x(), creature.y())) {
+                //     terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
+                // }
+                terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
             }
         }
         // Creatures can choose their next action now
@@ -92,8 +96,10 @@ public class PlayScreen implements Screen {
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
         int top = this.screenHeight - messages.size();
         for (int i = 0; i < messages.size(); i++) {
+            // 先把上一条用空格覆盖掉
+            terminal.write(String.format("%40s", " "), 0, top + i + 1);
             // TODO 消息长度不能超过屏幕宽度，否则报错
-            terminal.write(messages.get(i), 1, top + i + 1);
+            terminal.write(messages.get(i), 0, top + i + 1);
         }
         this.oldMessages.addAll(messages);
         messages.clear();
@@ -106,7 +112,7 @@ public class PlayScreen implements Screen {
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
         // Stats
-        String stats = String.format("%3d/%3d keys collected.", player.hp(), player.maxHP());
+        String stats = String.format("%02d/%02d keys collected.", player.score(), maxKeysNum);
         terminal.write(stats, 0, screenHeight);
         // Messages
         displayMessages(terminal, this.messages);
