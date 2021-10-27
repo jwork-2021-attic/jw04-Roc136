@@ -19,7 +19,8 @@ package screen;
 
 import world.*;
 import asciiPanel.AsciiPanel;
-import java.awt.Color;
+import maze.MazeSolution;
+
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,11 @@ public class PlayScreen implements Screen {
     private List<String> messages;
     private List<String> oldMessages;
     private int maxKeysNum;
+    private MazeSolution solution;
 
     public PlayScreen() {
-        this.screenWidth = 40;
-        this.screenHeight = 40;
+        this.screenWidth = 10;
+        this.screenHeight = 10;
         this.maxKeysNum = 10;
         createWorld();
         this.messages = new ArrayList<String>();
@@ -48,6 +50,24 @@ public class PlayScreen implements Screen {
 
         CreatureFactory creatureFactory = new CreatureFactory(this.world);
         createCreatures(creatureFactory);
+
+        int [][] maze = new int[screenWidth][screenHeight];
+        for (int i = 0; i < screenHeight; i++) {
+            for (int j = 0; j < screenWidth; j++) {
+                if (world.tile(j, i).isGround()) {
+                    maze[i][j] = 1;
+                } else {
+                    maze[i][j] = 0;
+                }
+            }
+        }
+        for (Creature c: world.getCreatures()) {
+            if (c.glyph() == (char)13) {
+                maze[c.y()][c.x()] = 2;
+            }
+        }
+        this.solution = new MazeSolution(maze);
+        this.solution.calculate();
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
@@ -60,8 +80,8 @@ public class PlayScreen implements Screen {
     }
 
     private void createWorld() {
-        // world = new WorldBuilder(40, 40).makeCaves().build();
-        world = new WorldBuilder(40, 40).makeMaze().build();
+        // world = new WorldBuilder(10, 10).makeMaze().build();
+        world = new WorldBuilder(screenWidth, screenHeight).makeMaze().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
@@ -123,15 +143,36 @@ public class PlayScreen implements Screen {
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 player.moveBy(-1, 0);
+                solution.checkStep(player.x(), player.y(), -1, 0);
                 break;
             case KeyEvent.VK_RIGHT:
                 player.moveBy(1, 0);
+                solution.checkStep(player.x(), player.y(), 1, 0);
                 break;
             case KeyEvent.VK_UP:
                 player.moveBy(0, -1);
+                solution.checkStep(player.x(), player.y(), 0, -1);
                 break;
             case KeyEvent.VK_DOWN:
                 player.moveBy(0, 1);
+                solution.checkStep(player.x(), player.y(), 0, 1);
+                break;
+            case KeyEvent.VK_ENTER:
+                int step = solution.getStep(player.x(), player.y());
+                switch(step) {
+                    case 0:
+                        player.moveBy(0, -1);
+                        break;
+                    case 1:
+                        player.moveBy(0, 1);
+                        break;
+                    case 2:
+                        player.moveBy(-1, 0);
+                        break;
+                    case 3:
+                        player.moveBy(1, 0);
+                        break;
+                }
                 break;
         }
         if (player.win()) {
