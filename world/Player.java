@@ -14,14 +14,14 @@ public class Player extends Creature {
     }
 
     @Override
-    public void moveBy(int mx, int my) {
+    public boolean moveBy(int mx, int my) {
         Creature other = world.creature(x + mx, y + my);
 
         if (other != null) {
             pick(other);
         }
         setFootPrints(mx, my);
-        ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
+        return ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
     }
 
     public void pick(Creature other) {

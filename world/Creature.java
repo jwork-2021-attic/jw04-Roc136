@@ -121,14 +121,15 @@ public class Creature {
         world.dig(wx, wy);
     }
 
-    public void moveBy(int mx, int my) {
+    public boolean moveBy(int mx, int my) {
         Creature other = world.creature(x + mx, y + my);
 
         if (other == null) {
             setFootPrints(mx, my);
-            ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
+            return ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
         } else {
             attack(other);
+            return false;
         }
     }
 

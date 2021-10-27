@@ -30,33 +30,11 @@ public class MazeSolution {
         for(int i = 0; i < maze.length; i++) {
             for(int j = 0; j < maze[0].length; j++) {
                 steps[i][j].clear();
+                flags[i][j] = 0;
             }
         }
 
         dfs(new Node(x, y));
-        /*
-        Stack<Node> stack = new Stack<Node>();
-        Node cur = new Node(x, y);
-        ArrayList<Node> neighbors = findNextNodes(cur);
-        for (Node n: neighbors) {
-            stack.push(n);
-        }
-
-        while(!stack.empty() && !isEnding(cur)) {
-            flags[cur.y][cur.x] = 1;
-            Node next = stack.pop();
-            int step = step(cur, next);
-            steps[cur.y][cur.x].add(step);
-
-            flags[cur.y][cur.x] = 2;
-
-            cur = next;
-            neighbors = findNextNodes(cur);
-            for (Node n: neighbors) {
-                stack.push(n);
-            }
-        }
-        */
     }
 
     private boolean dfs(Node cur) {
@@ -114,9 +92,13 @@ public class MazeSolution {
     }
 
     public void checkStep(int x, int y, int mx, int my) {
-        int step = step(new Node(x-mx, y-my), new Node(x, y));
-        int autoStep = steps[y-my][x-mx].poll();
-        if (autoStep != step) {
+        try {
+            int step = step(new Node(x-mx, y-my), new Node(x, y));
+            int autoStep = steps[y-my][x-mx].poll();
+            if (autoStep != step) {
+                calculate(x, y);
+            }
+        } catch (Exception e) {
             calculate(x, y);
         }
     }

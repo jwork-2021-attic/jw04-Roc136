@@ -142,20 +142,24 @@ public class PlayScreen implements Screen {
     public Screen respondToUserInput(KeyEvent key) {
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                player.moveBy(-1, 0);
-                solution.checkStep(player.x(), player.y(), -1, 0);
+                if (player.moveBy(-1, 0)) {
+                    solution.checkStep(player.x(), player.y(), -1, 0);
+                }
                 break;
             case KeyEvent.VK_RIGHT:
-                player.moveBy(1, 0);
-                solution.checkStep(player.x(), player.y(), 1, 0);
+                if (player.moveBy(1, 0)) {
+                    solution.checkStep(player.x(), player.y(), 1, 0);
+                }
                 break;
             case KeyEvent.VK_UP:
-                player.moveBy(0, -1);
-                solution.checkStep(player.x(), player.y(), 0, -1);
+                if (player.moveBy(0, -1)) {
+                    solution.checkStep(player.x(), player.y(), 0, -1);
+                }
                 break;
             case KeyEvent.VK_DOWN:
-                player.moveBy(0, 1);
-                solution.checkStep(player.x(), player.y(), 0, 1);
+                if (player.moveBy(0, 1)) {
+                    solution.checkStep(player.x(), player.y(), 0, 1);
+                }
                 break;
             case KeyEvent.VK_ENTER:
                 int step = solution.getStep(player.x(), player.y());

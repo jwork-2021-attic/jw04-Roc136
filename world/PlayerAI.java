@@ -32,12 +32,16 @@ public class PlayerAI extends CreatureAI {
         this.messages = messages;
     }
 
-    public void onEnter(int x, int y, Tile tile) {
+    public boolean onEnter(int x, int y, Tile tile) {
         if (tile.isGround()) {
             creature.setX(x);
             creature.setY(y);
+            return true;
         } else if (tile.isDiggable()) {
             creature.dig(x, y);
+            return false;
+        } else {
+            return false;
         }
     }
 
