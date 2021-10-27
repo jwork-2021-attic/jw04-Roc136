@@ -9,10 +9,14 @@ public class MazeSolution {
     private int[][] maze;
     private Queue<Integer>[][] steps; // 0-up, 1-down, 2-left, 3-right
     private int[][] flags;
+    private int maxKeysNum;
+    private int curKeysNum;
     
     @SuppressWarnings("unchecked")
-    public MazeSolution(int[][] maze) {
+    public MazeSolution(int[][] maze, int maxKeysNum) {
         this.maze = maze;
+        this.maxKeysNum = maxKeysNum;
+        this.curKeysNum = 0;
         steps = (Queue<Integer>[][])new Queue[maze.length][maze[0].length];
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze[0].length; j++) {
@@ -38,11 +42,20 @@ public class MazeSolution {
     }
 
     private boolean dfs(Node cur) {
-        if (isEnding(cur)) {
+        if (curKeysNum == maxKeysNum && isEnding(cur)) {
             flags[cur.y][cur.x] = 2;
             return true;
+        } else if (curKeysNum == maxKeysNum) {
+            for(int i = 0; i < maze.length; i++) {
+                for(int j = 0; j < maze[0].length; j++) {
+                    flags[i][j] = 0;
+                }
+            }
         }
         flags[cur.y][cur.x] = 1;
+        if (maze[cur.y][cur.x] == 2) {
+            curKeysNum++;
+        }
         ArrayList<Node> neighbors = findNextNodes(cur);
         for (Node next: neighbors) {
             steps[cur.y][cur.x].add(step(cur, next));
@@ -114,6 +127,7 @@ public class MazeSolution {
     }
 
     private boolean isEnding(Node n) {
-        return n.x == maze[0].length - 1 && n.y == maze.length - 1;
+        // return n.x == maze[0].length - 1 && n.y == maze.length - 1;
+        return n.x == 0 && n.y == 0;
     }
 }

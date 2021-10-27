@@ -66,7 +66,7 @@ public class PlayScreen implements Screen {
                 maze[c.y()][c.x()] = 2;
             }
         }
-        this.solution = new MazeSolution(maze);
+        this.solution = new MazeSolution(maze, maxKeysNum);
         this.solution.calculate();
     }
 
