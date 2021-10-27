@@ -27,6 +27,11 @@ public class MazeGenerator {
     }
 
     public void generateMaze() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                maze[i][j] = 0;
+            }
+        }
         stack.push(new Node(0,0));
         while (!stack.empty()) {
             Node next = stack.pop();
@@ -36,6 +41,7 @@ public class MazeGenerator {
                 randomlyAddNodesToStack(neighbors);
             }
         }
+        // System.out.println("SYMBOLIC MAZE\n" + this.getSymbolicMaze());
     }
 
     public int[][] getMaze() {

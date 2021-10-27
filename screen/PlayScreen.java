@@ -41,8 +41,8 @@ public class PlayScreen implements Screen {
     private MazeSolution solution;
 
     public PlayScreen() {
-        this.screenWidth = 10;
-        this.screenHeight = 10;
+        this.screenWidth = 40;
+        this.screenHeight = 40;
         this.maxKeysNum = 10;
         createWorld();
         this.messages = new ArrayList<String>();
